@@ -1,0 +1,83 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block main-content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-10">
+
+        <!-- Post Content -->
+        <div class="card shadow-sm mb-4">
+            {% if post.image %}
+                <img src="{{ post.image.url }}" class="card-img-top img-fluid mx-auto d-block" alt="{{ post.title }}" style="width: 60%; max-height: 60%; object-fit: cover; align:center">
+            {% endif %}
+            <div class="card-body">
+                <h2 class="card-title text-success">{{ post.title }}</h2>
+                <p class="card-text">{{ post.content }}</p>
+                <p class="text-muted">
+                    By <strong>{{ post.author.username }}</strong> 
+                    on {{ post.created_at|date:"F d, Y" }}
+                </p>
+
+                <!-- Show delete button only if the logged-in user is the author -->
+                {% if user.is_authenticated and user == post.author %}
+                    <div class="mt-3">
+                        <a href="{% url 'edit_post' post.id %}" class="btn btn-warning btn-sm">✏ Edit</a>
+                        <a href="{% url 'delete_post' post.id %}" class="btn btn-danger btn-sm">🗑 Delete</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h4 class="mb-4">Comments</h4>
+                
+                {% if comments %}
+                    {% for comment in comments %}
+                        <div class="border-bottom mb-3 pb-2">
+                            <strong>{{ comment.name }}</strong>
+                            <p class="mb-1">{{ comment.text }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        No comments yet. Be the first to comment!
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Add Comment Section -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="mb-3">Leave a Comment</h5>
+                
+                {% if user.is_authenticated %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Your Name</label>
+                            <input type="text" name="name" id="name" 
+                                   class="form-control" 
+                                   value="{{ user.username }}" 
+                                   readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="text" class="form-label">Your Comment</label>
+                            <textarea name="text" id="text" class="form-control" rows="3" placeholder="Write your comment here..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success">Add Comment</button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <strong>Note:</strong> You must be 
+                        <a href="{% url 'loginpage' %}" class="alert-link">logged in</a> to add a comment.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock main-content %}

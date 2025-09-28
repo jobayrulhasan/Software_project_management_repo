@@ -1,0 +1,28 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block main-content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-4">Edit Post</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" name="title" id="title" class="form-control" value="{{ post.title }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label">Content</label>
+                <textarea name="content" id="content" class="form-control" rows="6" required>{{ post.content }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Upload Image</label>
+                <input type="file" name="image" id="image" class="form-control">
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="Current Image" class="img-thumbnail mt-2" width="200">
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-success">Update Post</button>
+        </form>
+    </div>
+</div>
+{% endblock main-content %}
